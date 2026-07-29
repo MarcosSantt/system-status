@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Status - Amanda</title>
+  
+  <!-- Fontes do Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-terminal: #0a0a0f;
+      --text-terminal: #e8e8f0;
+      --accent-terminal: #00d9ff; 
+      --bg-apology: #fdfbfb;
+      --text-apology: #2f3542;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden; 
+    }
+
+    .screen {
+      width: 100%;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 1.5s ease, transform 1.5s ease;
+    }
+
+    /* --- TELA 1: TERMINAL (ALERTA) --- */
+    #error-screen {
+      background-color: var(--bg-terminal);
+      font-family: 'Fira Code', monospace;
+      color: var(--text-terminal);
+      z-index: 10;
+      padding: 2rem;
+    }
+
+    .terminal-content {
+      max-width: 650px;
+      width: 100%;
+    }
+
+    .terminal-content h1 {
+      color: var(--accent-terminal);
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--accent-terminal);
+      padding-left: 1rem;
+    }
+
+    .sys-msg {
+      font-size: 1rem;
+      color: #a4b0be;
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .blink-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2rem;
+      background-color: var(--text-terminal);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+      margin-left: 5px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .btn-terminal {
+      margin-top: 3rem;
+      background: transparent;
+      color: var(--accent-terminal);
+      border: 2px solid var(--accent-terminal);
+      padding: 1rem 2rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+      width: 100%;
+    }
+
+    .btn-terminal:hover {
+      background: var(--accent-terminal);
+      color: var(--bg-terminal);
+      box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(0, 217, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0); }
+    }
+
+    /* --- TELA 2: ELOGIO (LUZ/AMOR) --- */
+    #apology-screen {
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-apology);
+      z-index: 5;
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    #apology-screen.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: all;
+    }
+
+    .apology-card {
+      background: #ffffff;
+      max-width: 500px;
+      width: 100%;
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .photo-wrapper {
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 2rem;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #ffb8b8;
+      box-shadow: 0 10px 20px rgba(255, 184, 184, 0.3);
+    }
+
+    .photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .apology-card h2 {
+      font-size: 1.8rem;
+      color: #ff4757;
+      margin-bottom: 1rem;
+    }
+
+    .apology-card p {
+      font-size: 1rem;
+      color: #57606f;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .heart {
+      color: #ff4757;
+      font-size: 1.5rem;
+      animation: beat 1s infinite alternate;
+      display: inline-block;
+    }
+
+    @keyframes beat {
+      to { transform: scale(1.2); }
+    }
+
+    .fade-out {
+      opacity: 0 !important;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TELA 1: TERMINAL DE ALERTA -->
+  <div id="error-screen" class="screen">
+    <div class="terminal-content">
+      <h1>Aviso do Sistema: Conexão Instável.</h1>
+      <p class="sys-msg">> System status: Nível de chamego criticamente baixo.</p>
+      <p class="sys-msg">> Log: A Amanda ainda parece um pouquinho distante.</p>
+      <p class="sys-msg">> Diagnóstico: O sorriso dela é 100% necessário para o meu sistema funcionar direito.</p>
+      <p class="sys-msg">> Solução sugerida: Lembrar a ela o quanto ela é incrível.</p>
+      <p class="sys-msg">> Aguardando ação do usuário<span class="blink-cursor"></span></p>
+
+      <button id="fix-btn" class="btn-terminal">[ Executar script de carinho ]</button>
+    </div>
+  </div>
+
+  <!-- TELA 2: PÁGINA CLARA (ELOGIO) -->
+  <div id="apology-screen" class="screen">
+    <div class="apology-card">
+      <div class="photo-wrapper">
+        <!-- LINK DA FOTO IMPLEMENTADO AQUI -->
+        <img src="https://i.ibb.co/2Ym8vhcj/5b06ecb3-c3dc-4e32-801b-7761015c189d.jpg" alt="Marcos e Amanda">
+      </div>
+      
+      <h2>Você é a minha pessoa favorita!</h2>
+      
+      <p>A gente já conversou e se resolveu, mas eu não podia deixar de codar isso aqui só para te lembrar do quanto você é especial para mim.</p>
+      
+      <p>Nenhuma linha de código no mundo é tão perfeita quanto você. Você ilumina meus dias, me apoia e me faz querer ser a minha melhor versão sempre. Meu lugar favorito é bem pertinho de você, e é por isso que não gosto de te ver nem um pouquinho distante.</p>
+      
+      <p>Te amo infinitamente, minha futura dentista maravilhosa! <span class="heart">❤️</span></p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("fix-btn");
+      const errorScreen = document.getElementById("error-screen");
+      const apologyScreen = document.getElementById("apology-screen");
+
+      btn.addEventListener("click", () => {
+        errorScreen.classList.add("fade-out");
+        
+        setTimeout(() => {
+          apologyScreen.classList.add("active");
+        }, 500);
+      });
+    });
+  </script>
+</body>
+</html>
