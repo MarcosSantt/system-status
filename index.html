@@ -47,7 +47,7 @@
       font-family: 'Fira Code', monospace;
       color: var(--text-terminal);
       z-index: 10;
-      padding: 2rem;
+      padding: 1.5rem;
     }
 
     .terminal-content {
@@ -57,23 +57,23 @@
 
     .terminal-content h1 {
       color: var(--accent-terminal);
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
       margin-bottom: 1.5rem;
       border-left: 4px solid var(--accent-terminal);
       padding-left: 1rem;
     }
 
     .sys-msg {
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3vw, 1rem);
       color: #a4b0be;
       margin-bottom: 0.8rem;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     .blink-cursor {
       display: inline-block;
-      width: 10px;
-      height: 1.2rem;
+      width: 8px;
+      height: 1.1rem;
       background-color: var(--text-terminal);
       vertical-align: middle;
       animation: blink 1s step-end infinite;
@@ -86,13 +86,13 @@
     }
 
     .btn-terminal {
-      margin-top: 3rem;
+      margin-top: 2.5rem;
       background: transparent;
       color: var(--accent-terminal);
       border: 2px solid var(--accent-terminal);
-      padding: 1rem 2rem;
+      padding: 1rem 1.5rem;
       font-family: 'Fira Code', monospace;
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3vw, 1rem);
       font-weight: 700;
       cursor: pointer;
       border-radius: 4px;
@@ -123,7 +123,7 @@
       opacity: 0;
       transform: scale(0.95);
       pointer-events: none;
-      padding: 2rem;
+      padding: 1.5rem;
       overflow-y: auto;
     }
 
@@ -137,20 +137,27 @@
       background: #ffffff;
       max-width: 500px;
       width: 100%;
-      padding: 3rem 2rem;
+      padding: 2.5rem 2rem;
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.08);
       text-align: center;
+      margin: auto;
     }
 
     .photo-wrapper {
-      width: 180px;
-      height: 180px;
-      margin: 0 auto 2rem;
+      width: clamp(140px, 40vw, 180px);
+      height: clamp(140px, 40vw, 180px);
+      margin: 0 auto 1.5rem;
       border-radius: 50%;
       overflow: hidden;
       border: 4px solid #ffb8b8;
       box-shadow: 0 10px 20px rgba(255, 184, 184, 0.3);
+      cursor: pointer; /* Cursor de "clique" */
+      transition: transform 0.3s ease;
+    }
+
+    .photo-wrapper:hover {
+      transform: scale(1.05); /* Efeito de crescer no mouse */
     }
 
     .photo-wrapper img {
@@ -160,16 +167,16 @@
     }
 
     .apology-card h2 {
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 5vw, 1.8rem);
       color: #ff4757;
       margin-bottom: 1rem;
     }
 
     .apology-card p {
-      font-size: 1rem;
+      font-size: clamp(0.9rem, 3vw, 1rem);
       color: #57606f;
       line-height: 1.7;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
     }
 
     .heart {
@@ -186,6 +193,63 @@
     .fade-out {
       opacity: 0 !important;
       visibility: hidden;
+    }
+
+    /* --- MODAL DA IMAGEM AMPLIADA --- */
+    #image-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85); /* Fundo escuro transparente */
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #image-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #image-modal img {
+      max-width: 90%;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transform: scale(0.8);
+      transition: transform 0.3s ease;
+    }
+
+    #image-modal.show img {
+      transform: scale(1); /* Animação suave ao abrir */
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #ffffff;
+      font-size: 2.5rem;
+      font-weight: 300;
+      cursor: pointer;
+      font-family: sans-serif;
+    }
+
+    /* RESPONSIVIDADE PARA CELULARES PEQUENOS */
+    @media (max-width: 400px) {
+      .apology-card {
+        padding: 2rem 1.2rem;
+      }
+      .close-modal {
+        top: 15px;
+        right: 20px;
+      }
     }
   </style>
 </head>
@@ -208,8 +272,9 @@
   <!-- TELA 2: PÁGINA CLARA (ELOGIO) -->
   <div id="apology-screen" class="screen">
     <div class="apology-card">
-      <div class="photo-wrapper">
-        <!-- LINK DA FOTO IMPLEMENTADO AQUI -->
+      
+      <!-- FOTO PRINCIPAL -->
+      <div class="photo-wrapper" id="photo-trigger" title="Clique para ampliar!">
         <img src="https://i.ibb.co/2Ym8vhcj/5b06ecb3-c3dc-4e32-801b-7761015c189d.jpg" alt="Marcos e Amanda">
       </div>
       
@@ -223,8 +288,15 @@
     </div>
   </div>
 
+  <!-- MODAL: FOTO AMPLIADA -->
+  <div id="image-modal">
+    <span class="close-modal">&times;</span>
+    <img id="modal-img" src="" alt="Foto Ampliada">
+  </div>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // Navegação entre telas
       const btn = document.getElementById("fix-btn");
       const errorScreen = document.getElementById("error-screen");
       const apologyScreen = document.getElementById("apology-screen");
@@ -235,6 +307,24 @@
         setTimeout(() => {
           apologyScreen.classList.add("active");
         }, 500);
+      });
+
+      // Lógica do Modal de Imagem (Lightbox)
+      const photoTrigger = document.getElementById("photo-trigger");
+      const imageModal = document.getElementById("image-modal");
+      const modalImg = document.getElementById("modal-img");
+
+      // Abrir Modal
+      photoTrigger.addEventListener("click", () => {
+        // Pega a URL da imagem clicada e joga na imagem do modal
+        const imgSrc = photoTrigger.querySelector("img").src;
+        modalImg.src = imgSrc;
+        imageModal.classList.add("show");
+      });
+
+      // Fechar Modal ao clicar nele (fundo escuro, "X" ou na própria foto)
+      imageModal.addEventListener("click", () => {
+        imageModal.classList.remove("show");
       });
     });
   </script>
